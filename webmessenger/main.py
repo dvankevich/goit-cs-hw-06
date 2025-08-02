@@ -13,7 +13,7 @@ class HttpHandler(BaseHTTPRequestHandler):
         data_dict = {key: value for key, value in [el.split('=') for el in data_parse.split('&')]}
         print(data_dict)
         self.send_response(302)
-        self.send_header('Location', '/')
+        self.send_header('Location', 'redirect.html')
         self.end_headers()
 
     def do_GET(self):
