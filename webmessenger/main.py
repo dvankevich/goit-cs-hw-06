@@ -2,7 +2,9 @@ import mimetypes
 import pathlib
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import urllib.parse
-
+import asyncio
+import logging
+from multiprocessing import Process
 
 class HttpHandler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -47,14 +49,21 @@ class HttpHandler(BaseHTTPRequestHandler):
             self.wfile.write(file.read())
 
 
-def run(server_class=HTTPServer, handler_class=HttpHandler):
-    server_address = ('', 8000)
+def run_http_server(server_class=HTTPServer, handler_class=HttpHandler):
+    server_address = ('0.0.0.0', 3000)
     http = server_class(server_address, handler_class)
-    try:
-        http.serve_forever()
-    except KeyboardInterrupt:
-        http.server_close()
+    # try:
+    #     http.serve_forever()
+    # except KeyboardInterrupt:
+    #     http.server_close()
+    logging.info(f"HTTP server started on {server_address}")
+    http.serve_forever()
 
 
 if __name__ == '__main__':
-    run()
+    logging.basicConfig(level=logging.INFO, format='%(threadName)s %(message)s')
+    http_proc = Process(target=run_http_server)
+    
+    http_proc.start()
+    
+    http_proc.join()
