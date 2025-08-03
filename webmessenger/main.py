@@ -5,6 +5,9 @@ import urllib.parse
 import asyncio
 import logging
 from multiprocessing import Process
+from datetime import datetime
+import json
+import websockets
 
 class HttpHandler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -58,12 +61,46 @@ def run_http_server(server_class=HTTPServer, handler_class=HttpHandler):
     #     http.server_close()
     logging.info(f"HTTP server started on {server_address}")
     http.serve_forever()
+    
+class WebSocketServer:
+    def __init__(self):
+        pass
+    
+    async def ws_handler(self, websocket):
+        async for message in websocket:
+            data = json.loads(message)
+
+            date = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+
+            message_data = {
+                "date": date,
+                "username": data["username"],
+                "message": data["message"],
+            }
+
+            # save message to DB
+            logging.info(f"Message: {message_data} saved to db.")
+    
+async def start_websocket_server():
+    server = WebSocketServer()
+    server_ip = '0.0.0.0'
+    server_port =5000
+    async with websockets.serve(server.ws_handler, server_ip, server_port):
+        #logging.info(f"WebSocket server started on {server_ip}:{server_port}")
+        await asyncio.Future()
+
+
+def run_websocket_server():
+    asyncio.run(start_websocket_server()) 
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(threadName)s %(message)s')
+    logging.basicConfig(level=logging.INFO)
     http_proc = Process(target=run_http_server)
+    websocket_proc = Process(target=run_websocket_server)
     
     http_proc.start()
+    websocket_proc.start()
     
+    websocket_proc.join()
     http_proc.join()

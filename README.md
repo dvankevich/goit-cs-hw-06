@@ -3,3 +3,7 @@
 ```
 pip install websockets
 ```
+
+```
+sudo apt install websocat
+```
