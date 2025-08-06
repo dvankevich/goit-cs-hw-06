@@ -43,7 +43,32 @@ class HttpHandler(BaseHTTPRequestHandler):
         elif pr_url.path == "/message":
             self.send_html_file("message.html")
         elif pr_url.path == "/view-messages":
-            self.send_html_file("view-messages.html")
+            logging.info("view-messages page")
+            # self.send_html_file("view-messages.html")
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            # Зчитування HTML-шаблону
+            with open("view-messages.html", "r") as file:
+                html_template = file.read()
+            # connect to DB
+            self.client = MongoClient("mongodb://localhost:27017/")
+            self.db = self.client["db_messages"]
+            self.collection = self.db["messages"]
+            # get messages
+            messages = self.collection.find()
+
+            messages_html = ""
+            for message in messages:
+                content_with_backticks = f"<pre>{message['message']}</pre>"
+                messages_html += f"<div><strong>{message['username']}:</strong> {content_with_backticks} <em>({message['date']})</em><hr></div>"
+
+            # print(messages_html)
+            # add dynamic content
+            final_html = html_template.replace(
+                "<!-- Dynamic content will be inserted here -->", messages_html
+            )
+            self.wfile.write(final_html.encode("utf-8"))
         else:
             if pathlib.Path().joinpath(pr_url.path[1:]).exists():
                 self.send_static()
