@@ -14,8 +14,8 @@ import sys
 
 
 class HttpHandler(BaseHTTPRequestHandler):
-    def do_POST(self):
 
+    def do_POST(self):
         async def send_message(message_data):
             uri = "ws://localhost:5000"
             async with websockets.connect(uri) as websocket:
@@ -88,7 +88,7 @@ class WebSocketServer:
             self.client = MongoClient("mongodb://localhost:27017/")
             # Attempt a simple operation to confirm connection
             self.client.admin.command("ismaster")
-            logging.info("Successfully connected to MongoDB!")
+            logging.info("Websocket server successfully connected to MongoDB!")
             # print("Successfully connected to MongoDB!")
         except ConnectionFailure as e:
             # print(f"MongoDB connection failed: {e}")
