@@ -72,10 +72,6 @@ class HttpHandler(BaseHTTPRequestHandler):
 def run_http_server(server_class=HTTPServer, handler_class=HttpHandler):
     server_address = ("0.0.0.0", 3000)
     http = server_class(server_address, handler_class)
-    # try:
-    #     http.serve_forever()
-    # except KeyboardInterrupt:
-    #     http.server_close()
     logging.info(f"HTTP server started on {server_address}")
     http.serve_forever()
 
