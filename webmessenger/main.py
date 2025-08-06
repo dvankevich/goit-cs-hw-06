@@ -42,6 +42,8 @@ class HttpHandler(BaseHTTPRequestHandler):
             self.send_html_file("index.html")
         elif pr_url.path == "/message":
             self.send_html_file("message.html")
+        elif pr_url.path == "/view-messages":
+            self.send_html_file("view-messages.html")
         else:
             if pathlib.Path().joinpath(pr_url.path[1:]).exists():
                 self.send_static()
