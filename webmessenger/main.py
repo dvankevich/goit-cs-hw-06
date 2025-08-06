@@ -30,7 +30,7 @@ class HttpHandler(BaseHTTPRequestHandler):
         }
         print(data_dict)
 
-        asyncio.run(send_message(data_dict))
+        asyncio.run(send_message(json.dumps(data_dict)))
 
         self.send_response(302)
         self.send_header("Location", "redirect.html")
@@ -109,6 +109,7 @@ class WebSocketServer:
             }
 
             # save message to DB
+            self.collection.insert_one(message_data)
             logging.info(f"Message: {message_data} saved to db.")
 
 
