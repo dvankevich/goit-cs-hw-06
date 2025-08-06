@@ -33,6 +33,12 @@ While Docker automatically creates the volume if it doesn't exist, you can also 
 docker volume create mongo_data_volume
 ```
 
+### start MongoDB container
+
+```
+docker start my-mongodb
+```
+
 ### To interact with your MongoDB instance using the mongosh shell
 
 ```

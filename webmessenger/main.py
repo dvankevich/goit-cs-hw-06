@@ -9,10 +9,18 @@ from datetime import datetime
 import json
 import websockets
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
+import sys
 
 
 class HttpHandler(BaseHTTPRequestHandler):
     def do_POST(self):
+
+        async def send_message(message_data):
+            uri = "ws://localhost:5000"
+            async with websockets.connect(uri) as websocket:
+                await websocket.send(message_data)
+
         data = self.rfile.read(int(self.headers["Content-Length"]))
         print(data)
         data_parse = urllib.parse.unquote_plus(data.decode())
@@ -21,6 +29,9 @@ class HttpHandler(BaseHTTPRequestHandler):
             key: value for key, value in [el.split("=") for el in data_parse.split("&")]
         }
         print(data_dict)
+
+        asyncio.run(send_message(data_dict))
+
         self.send_response(302)
         self.send_header("Location", "redirect.html")
         self.end_headers()
@@ -69,7 +80,19 @@ def run_http_server(server_class=HTTPServer, handler_class=HttpHandler):
 
 class WebSocketServer:
     def __init__(self):
-        self.client = MongoClient("mongodb://localhost:27017/")
+        # self.client = MongoClient("mongodb://localhost:27017/")
+        try:
+            print("Connect to MongoDB . . .")
+            self.client = MongoClient("mongodb://localhost:27017/")
+            # Attempt a simple operation to confirm connection
+            self.client.admin.command("ismaster")
+            logging.info("Successfully connected to MongoDB!")
+            # print("Successfully connected to MongoDB!")
+        except ConnectionFailure as e:
+            # print(f"MongoDB connection failed: {e}")
+            logging.error(f"MongoDB connection failed: {e}")
+            sys.exit(1)
+
         self.db = self.client["db_messages"]
         self.collection = self.db["messages"]
 
