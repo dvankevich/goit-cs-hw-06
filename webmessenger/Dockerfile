@@ -4,8 +4,7 @@ WORKDIR /webmessenger
 
 COPY . /webmessenger
 
-RUN cp /webmessenger/.env.docker /webmessenger/.env && \
-  pip install --no-cache-dir -r /webmessenger/requirements.txt
+RUN pip install --no-cache-dir -r /webmessenger/requirements.txt
 
 EXPOSE 3000
 EXPOSE 5000

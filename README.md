@@ -52,9 +52,21 @@ docker exec -it my-mongodb mongosh
 docker logs my-mongodb
 ```
 
-## docker-compose
+## Run programm
 
 ```
-docker-compose up --build # for rebuild conteiner
-docker-compose up # for start
+git clone git@github.com:dvankevich/goit-cs-hw-06.git
+cd goit-cs-hw-06.git/webmessenger
+cp .env.docker .env
+
+docker-compose up
 ```
+
+programm url - http://localhost:3000
+
+## Screenshots
+
+![send message](send-message.png)
+send message
+![view messages](view-messages.png)
+view messages
