@@ -51,3 +51,10 @@ docker exec -it my-mongodb mongosh
 ```
 docker logs my-mongodb
 ```
+
+## docker-compose
+
+```
+docker-compose up --build # for rebuild conteiner
+docker-compose up # for start
+```

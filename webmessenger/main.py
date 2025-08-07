@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongodb:27017/")
 HTTP_SERVER_ADDRESS = os.getenv("HTTP_SERVER_ADDRESS", "0.0.0.0")
 HTTP_SERVER_PORT = int(os.getenv("HTTP_SERVER_PORT", "3000"))
 WS_SERVER_IP = os.getenv("WS_SERVER_IP", "0.0.0.0")
