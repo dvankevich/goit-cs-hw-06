@@ -10,14 +10,23 @@ import json
 import websockets
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
-import sys
+import sys, os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+HTTP_SERVER_ADDRESS = os.getenv("HTTP_SERVER_ADDRESS", "0.0.0.0")
+HTTP_SERVER_PORT = int(os.getenv("HTTP_SERVER_PORT", "3000"))
+WS_SERVER_IP = os.getenv("WS_SERVER_IP", "0.0.0.0")
+WS_SERVER_PORT = int(os.getenv("WS_SERVER_PORT", "5000"))
 
 
 class HttpHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         async def send_message(message_data):
-            uri = "ws://localhost:5000"
+            uri = f"ws://{WS_SERVER_IP}:{WS_SERVER_PORT}"
             async with websockets.connect(uri) as websocket:
                 await websocket.send(message_data)
 
@@ -52,7 +61,7 @@ class HttpHandler(BaseHTTPRequestHandler):
             with open("view-messages.html", "r") as file:
                 html_template = file.read()
             # connect to DB
-            self.client = MongoClient("mongodb://localhost:27017/")
+            self.client = MongoClient(MONGO_URI)
             self.db = self.client["db_messages"]
             self.collection = self.db["messages"]
             # get messages
@@ -95,7 +104,7 @@ class HttpHandler(BaseHTTPRequestHandler):
 
 
 def run_http_server(server_class=HTTPServer, handler_class=HttpHandler):
-    server_address = ("0.0.0.0", 3000)
+    server_address = (HTTP_SERVER_ADDRESS, HTTP_SERVER_PORT)
     http = server_class(server_address, handler_class)
     logging.info(f"HTTP server started on {server_address}")
     http.serve_forever()
@@ -106,13 +115,11 @@ class WebSocketServer:
         # self.client = MongoClient("mongodb://localhost:27017/")
         try:
             print("Connect to MongoDB . . .")
-            self.client = MongoClient("mongodb://localhost:27017/")
+            self.client = MongoClient(MONGO_URI)
             # Attempt a simple operation to confirm connection
             self.client.admin.command("ismaster")
             logging.info("Websocket server successfully connected to MongoDB!")
-            # print("Successfully connected to MongoDB!")
         except ConnectionFailure as e:
-            # print(f"MongoDB connection failed: {e}")
             logging.error(f"MongoDB connection failed: {e}")
             sys.exit(1)
 
@@ -138,10 +145,7 @@ class WebSocketServer:
 
 async def start_websocket_server():
     server = WebSocketServer()
-    server_ip = "0.0.0.0"
-    server_port = 5000
-    async with websockets.serve(server.ws_handler, server_ip, server_port):
-        # logging.info(f"WebSocket server started on {server_ip}:{server_port}")
+    async with websockets.serve(server.ws_handler, WS_SERVER_IP, WS_SERVER_PORT):
         await asyncio.Future()
 
 

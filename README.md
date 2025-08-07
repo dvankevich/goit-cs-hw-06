@@ -5,6 +5,7 @@
 ```
 pip install websockets
 pip install pymongo
+pip install python-dotenv
 ```
 
 ## run MongoDB locally using Docker
